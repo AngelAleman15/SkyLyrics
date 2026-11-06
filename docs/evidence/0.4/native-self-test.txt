@@ -1,0 +1,1 @@
+PCM16/24/float32 and non-finite decoding: PASS; no capture performed

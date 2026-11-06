@@ -13,7 +13,7 @@ class LyricsCacheTest {
 
     @Test void localLyricsOverrideNegativeCacheAndVersionsUseDifferentKeys() throws Exception {
         var cache = new LyricsCache(folder);
-        cache.write(track, LyricsResult.State.NOT_FOUND, null);
+        cache.writeResult(track, LyricsResult.empty(LyricsResult.State.NOT_FOUND));
         assertEquals(LyricsResult.State.NOT_FOUND, cache.read(track).state());
         Path local = cache.localFile(track);
         Files.createDirectories(local.getParent());

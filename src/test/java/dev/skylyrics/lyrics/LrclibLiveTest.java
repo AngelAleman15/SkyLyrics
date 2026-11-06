@@ -19,6 +19,7 @@ class LrclibLiveTest {
         var result = provider.find(track);
         assertEquals(LyricsResult.State.SYNCED, result.state());
         assertFalse(result.cues().isEmpty());
-        assertEquals(result, cache.read(track));
+        assertEquals(result.cues(), cache.read(track).cues());
+        assertEquals(result.words(), cache.read(track).words());
     }
 }

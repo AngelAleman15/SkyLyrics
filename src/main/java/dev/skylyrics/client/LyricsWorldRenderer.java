@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL11;
+import dev.skylyrics.rhythm.SubtleRhythmController;
 
 /** Draw-only consumer: cannot modify, replace or relocate a phrase. */
 public final class LyricsWorldRenderer {
@@ -21,7 +22,8 @@ public final class LyricsWorldRenderer {
     private final MultiBufferSource.BufferSource buffers =
             MultiBufferSource.immediate(new BufferBuilder(8192));
 
-    public void render(RenderLevelStageEvent event, Iterable<WorldPhrase> phrases, long musicalNs, long realNs) {
+    public void render(RenderLevelStageEvent event, Iterable<WorldPhrase> phrases, long musicalNs, long realNs,
+                       SubtleRhythmController.Visual rhythm) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 camera = event.getCamera().getPosition();
         PoseStack pose = event.getPoseStack();
@@ -53,7 +55,7 @@ public final class LyricsWorldRenderer {
                         pose.mulPose(Axis.XP.rotationDegrees(-anchor.pitchDegrees()));
                     }
                     pose.mulPose(Axis.ZP.rotationDegrees(anchor.rollDegrees()));
-                    float scale = anchor.scale() * AnimationController.scale(phrase, musicalNs);
+                    float scale = (float)(anchor.scale() * AnimationController.scale(phrase, musicalNs) * rhythm.scale());
                     pose.scale(-scale, -scale, scale);
                     int shadowAlpha = Math.round(alpha * .18f);
                     for (int i = 0; i < layout.lines().size(); i++) {
@@ -64,7 +66,7 @@ public final class LyricsWorldRenderer {
                                     (shadowAlpha << 24) | 0x362F29, false, pose.last().pose(),
                                     buffers, mode, 0, LightTexture.FULL_BRIGHT);
                         }
-                        mc.font.drawInBatch(line.text(), x, y, (alpha << 24) | SkyLyricsConfig.COLOR.get(),
+                        mc.font.drawInBatch(line.text(), x, y, (alpha << 24) | SubtleRhythmController.brighten(SkyLyricsConfig.COLOR.get(), rhythm.brightness()),
                                 false, pose.last().pose(), buffers, mode, 0, LightTexture.FULL_BRIGHT);
                     }
                 } finally {

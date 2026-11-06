@@ -29,12 +29,16 @@ public final class LyricsSession implements AutoCloseable {
     public Loaded loaded() { return loaded; }
 
     public void request(PlaybackSnapshot track, String localName, boolean importForTrack) {
+        request(track, localName, importForTrack, false);
+    }
+    public void request(PlaybackSnapshot track, String localName, boolean importForTrack, boolean force) {
         long requestRevision = ++revision;
         loaded = null;
         if (pending != null) pending.cancel(true);
         pending = worker.submit(() -> {
             LyricsResult result;
             try {
+                if (force) cache.invalidate(track);
                 if (localName != null) {
                     Path folder = root.resolve("imports");
                     Files.createDirectories(folder);
@@ -43,8 +47,9 @@ public final class LyricsSession implements AutoCloseable {
                             || Files.size(file) > 2_000_000) throw new IllegalArgumentException("Invalid LRC file");
                     String lrc = Files.readString(file);
                     var cues = LrcParser.parse(lrc, track.durationMs());
-                    result = cues.isEmpty() ? LyricsResult.empty(LyricsResult.State.NO_SYNCED_LYRICS)
-                            : new LyricsResult(LyricsResult.State.SYNCED, cues);
+                    result = (cues.isEmpty() ? LyricsResult.empty(LyricsResult.State.NO_SYNCED_LYRICS)
+                            : new LyricsResult(LyricsResult.State.SYNCED, cues))
+                            .withDiagnostics(LyricsDiagnostics.local(track, cues.isEmpty() ? "No valid LRC timestamps" : "LRC associated with original track metadata"));
                     if (importForTrack && result.state() == LyricsResult.State.SYNCED) {
                         Path target = cache.localFile(track);
                         Files.createDirectories(target.getParent());
@@ -52,7 +57,10 @@ public final class LyricsSession implements AutoCloseable {
                     }
                 } else result = provider.find(track);
             } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
-            catch (Exception e) { result = LyricsResult.empty(LyricsResult.State.ERROR); }
+            catch (Exception e) { result = LyricsResult.empty(localName != null ? LyricsResult.State.LOCAL_FILE_ERROR : LyricsResult.State.MALFORMED_RESPONSE)
+                    .withDiagnostics(LyricsDiagnostics.local(track, e.getClass().getSimpleName() + ": " + e.getMessage())); }
+            if (SkyLyricsConfig.LYRICS_DIAGNOSTICS.get()) com.mojang.logging.LogUtils.getLogger().info(
+                    "SkyLyrics lookup diagnostics: {}", new com.google.gson.Gson().toJson(result.diagnostics()));
             if (!closed && revision == requestRevision) loaded = new Loaded(requestRevision, track.trackKey(), result);
         });
     }

@@ -1,0 +1,1 @@
+DSP only: 10000 windows; audio=213.33s; wall=101.58ms; CPU=67.47ms; mean=10.16µs/window; allocation=80 bytes/window

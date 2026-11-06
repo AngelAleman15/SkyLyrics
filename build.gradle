@@ -2,31 +2,46 @@ plugins {
     id 'java'
     id 'net.minecraftforge.gradle' version '6.0.42'
 }
-version = '0.3.0'
+version = '0.4.0'
 group = 'dev.skylyrics'
 base { archivesName = 'skylyrics-1.20.1' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+jarJar.enable()
 minecraft {
     mappings channel: 'official', version: '1.20.1'
     copyIdeResources = true
     runs {
         client {
-            workingDirectory project.file('run')
+            workingDirectory project.file(project.hasProperty('packagedSmoke') ? 'run-packaged' : 'run')
             property 'forge.logging.console.level', 'info'
-            mods { skylyrics { source sourceSets.main } }
+            if (!project.hasProperty('packagedSmoke')) {
+                mods { skylyrics { source sourceSets.main } }
+            }
         }
     }
 }
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+    if (project.hasProperty('packagedSmoke')) { flatDir { dirs 'run-packaged/libraries' } }
+}
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.3.0'
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    if (project.hasProperty('packagedSmoke')) {
+        runtimeOnly fg.deobf("local:skylyrics-1.20.1:${project.version}")
+    }
+    implementation 'org.yaml:snakeyaml:2.3'
+    jarJar(group: 'org.yaml', name: 'snakeyaml', version: '[2.3,2.4)') {
+        jarJar.pin(it, '2.3')
+    }
 }
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 tasks.named('test') { useJUnitPlatform() }
 tasks.named('jar', Jar) {
+    archiveClassifier = 'slim'
     manifest { attributes 'Implementation-Version': project.version }
     finalizedBy 'reobfJar'
 }
+tasks.named('jarJar', Jar) { archiveClassifier = ''; finalizedBy 'reobfJarJar' }

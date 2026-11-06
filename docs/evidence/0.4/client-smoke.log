@@ -1,0 +1,19 @@
+[06Nov2026 05:48:12.508] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Subtle Rhythm: DISABLED | fuente=SYSTEM | frecuencia=0Hz | RMS=0.00000 | análisis=0µs | edad estimada de la última ventana=-1ms | captura→último dibujo≈-1ms
+[06Nov2026 05:48:14.412] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics: WINDOWS_REQUIRED
+[06Nov2026 05:48:18.840] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 05:48:18.840] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #0 (-22.491, -48.724, 12.846) yaw=6.0 pitch=-35.3 roll=3.3
+[06Nov2026 05:48:54.214] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 05:48:54.215] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #1 (2.879, -36.380, 35.022) yaw=-33.0 pitch=-26.7 roll=2.0
+[06Nov2026 05:48:58.190] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 05:48:58.191] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #1 (2.879, -36.380, 35.022) yaw=-33.0 pitch=-26.7 roll=2.0
+[06Nov2026 05:49:00.088] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Subtle Rhythm activado: mezcla de salida del SISTEMA; puede incluir juego, Discord y otras apps. No graba ni envía audio.
+[06Nov2026 05:49:00.089] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Subtle Rhythm: WAITING_FOR_SPOTIFY | fuente=SYSTEM | frecuencia=0Hz | RMS=0.00000 | análisis=0µs | edad estimada de la última ventana=-1ms | captura→último dibujo≈-1ms
+[06Nov2026 05:49:02.816] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Subtle Rhythm: WAITING_FOR_SPOTIFY | fuente=SYSTEM | frecuencia=0Hz | RMS=0.00000 | análisis=0µs | edad estimada de la última ventana=-1ms | captura→último dibujo≈-1ms
+[06Nov2026 05:49:04.753] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Subtle Rhythm: DISABLED | fuente=SYSTEM | frecuencia=0Hz | RMS=0.00000 | análisis=0µs | edad estimada de la última ventana=-1ms | captura→último dibujo≈-1ms
+[06Nov2026 05:49:27.270] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] LRC local: reloj manual iniciado; no reproduce audio ni detecta Spotify.
+[06Nov2026 05:49:31.050] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics: SYNCED
+[06Nov2026 05:49:31.054] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Título=paisaje.lrc | artista=Local LRC | álbum= | duración=45000ms | posición=3781ms | reproduciendo=true
+[06Nov2026 05:49:31.056] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Estado=SYNCED | sincronización=LINE | fuente=LOCAL_LRC | caché=false | espera=0ms
+[06Nov2026 05:49:31.056] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] LRC associated with original track metadata
+[06Nov2026 05:49:31.057] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Candidatos evaluados=0; /skylyrics diagnostics export para el informe completo.
+[06Nov2026 05:49:33.167] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Exportando diagnóstico a config/skylyrics/diagnostics/last-lookup.json
