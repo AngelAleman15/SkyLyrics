@@ -1,0 +1,6 @@
+[04:05:35] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] SkyLyrics | WINDOWS_REQUIRED | demo=false | frases=0
+[04:05:37] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] LRC local: reloj manual iniciado; no reproduce audio ni detecta Spotify.
+[04:05:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] SkyLyrics | SYNCED | demo=false | frases=1
+[04:05:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] #0 (-5.190, -38.847, 42.593)
+[04:05:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] SkyLyrics | SYNCED | demo=false | frases=1
+[04:05:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] #1 (-5.117, -40.380, 21.871)

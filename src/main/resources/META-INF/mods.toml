@@ -1,0 +1,22 @@
+modLoader="javafml"
+loaderVersion="[47,48)"
+license="All Rights Reserved"
+[[mods]]
+modId="skylyrics"
+version="${file.jarVersion}"
+displayName="SkyLyrics"
+displayTest="IGNORE_ALL_VERSION"
+authors="SkyLyrics"
+description='''Client-only world-anchored lyrics, Windows Spotify GSMTC integration and synchronized LRC/LRCLIB support.'''
+[[dependencies.skylyrics]]
+modId="forge"
+mandatory=true
+versionRange="[47,48)"
+ordering="NONE"
+side="CLIENT"
+[[dependencies.skylyrics]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.20.2)"
+ordering="NONE"
+side="CLIENT"

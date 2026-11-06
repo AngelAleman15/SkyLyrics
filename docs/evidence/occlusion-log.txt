@@ -1,0 +1,8 @@
+[06Nov2026 04:12:20.551] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 04:12:25.744] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 04:13:26.316] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 04:13:29.551] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 04:14:33.891] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 04:14:33.892] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #2 (6.303, -37.528, 41.707)
+[06Nov2026 04:14:37.148] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | STOPPED | demo=false | frases=1
+[06Nov2026 04:14:37.148] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #2 (6.303, -37.528, 41.707)

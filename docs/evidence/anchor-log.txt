@@ -1,0 +1,7 @@
+[06Nov2026 03:51:07.448] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics fase 1 | demo=false | frases=1
+[06Nov2026 03:51:07.454] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #1 (24.489, -40.380, 36.809)
+[06Nov2026 03:51:10.788] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics fase 1 | demo=false | frases=1
+[06Nov2026 03:51:10.788] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #1 (24.489, -40.380, 36.809)
+[06Nov2026 03:51:13.605] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics fase 1 | demo=false | frases=1
+[06Nov2026 03:51:13.605] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #1 (24.489, -40.380, 36.809)
+[06Nov2026 03:52:03.677] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics fase 1 | demo=false | frases=0
