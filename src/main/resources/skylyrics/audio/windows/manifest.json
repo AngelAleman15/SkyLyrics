@@ -1,0 +1,24 @@
+{
+  "protocol": 2,
+  "target": ".NET Framework 4.7.2",
+  "source": "native/SkyLyrics.AudioBridge",
+  "naudio": "2.2.1",
+  "files": [
+    {
+      "name": "SkyLyrics.AudioBridge.exe",
+      "sha256": "19033f96d2c2cb7f411eddd7b20e0bd66c10d4a07d0e66dc63bd7cb8e7fdcc99"
+    },
+    {
+      "name": "SkyLyrics.AudioBridge.exe.config",
+      "sha256": "435ea23443d8dd98eeb707aad9d3a5c1fe6046f8d76647a44d495d94ea4597ef"
+    },
+    {
+      "name": "NAudio.Core.dll",
+      "sha256": "fcf493fc47a2f478a65303886b975fbdbf714cbb1f2d79f7fce97e4bb16b01a8"
+    },
+    {
+      "name": "NAudio.Wasapi.dll",
+      "sha256": "618ef0e49d64e7a66dfe64bbf6ae81705b9d9683d8a9f321e5c3024d666bdf82"
+    }
+  ]
+}

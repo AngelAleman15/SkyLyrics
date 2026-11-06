@@ -35,33 +35,27 @@ reproductor real antes de considerar esta integración estable.
 
 ## LRCLIB
 
-Se usa solo el endpoint documentado `GET https://lrclib.net/api/get` con título,
-artista, álbum y duración. No se usa búsqueda aproximada. Se verifican también los
-metadatos de la respuesta y una tolerancia de duración de ±2 s; un resultado dudoso
-se rechaza. Esto puede omitir versiones válidas si sus metadatos difieren, pero
-reduce el riesgo de mostrar letras de otra edición.
+Se consulta `/api/get` con los metadatos originales y después `/api/search` con
+variantes acotadas del título. La comparación conserva controles de artista,
+colaboradores, versión, álbum y duración. Los candidatos dudosos se rechazan;
+los errores de conexión y las letras sin tiempos tienen estados propios.
+Los detalles, límites, diagnóstico y formatos están en
+[LYRICS_RECOVERY.md](LYRICS_RECOVERY.md).
 
-`User-Agent`: `SkyLyrics/0.3.0 (https://github.com/AngelAleman15/SkyLyrics)`.
-El repositorio fue verificado como existente y público antes de configurar esta
-URL. `lrclibIdentity` permite modificarla; vacío impide consultas online nuevas,
-aunque conserva el acceso a archivos locales y caché. No hay una URL ficticia ni
-un correo incorporado.
+`User-Agent`: `SkyLyrics/0.4.0 (https://github.com/AngelAleman15/SkyLyrics)`.
+`lrclibIdentity` permite modificar la identificación; vacío impide consultas online
+nuevas, conservando archivos locales y caché. Se utiliza la URL real del proyecto.
 
-Un worker realiza HTTP/disco. Cada cambio cancela el trabajo anterior y etiqueta
-los resultados por revisión y clave de canción. Una respuesta tardía puede quedar
-en su caché correcta, pero nunca se aplica a la canción nueva. Se realizan consultas
-solo al cambiar de clave o por un reintento explícito; no se consulta cada tick.
-429 respeta `Retry-After`, con cooldown compartido entre sesiones del mismo cliente.
+HTTP y disco se ejecutan en un worker. Los resultados llevan revisión y clave de
+canción para descartar respuestas tardías. No se consulta cada tick. La caché v2
+guarda sincronizados durante 30 días y negativos durante 6 horas; los fallos de
+red no se guardan como ausencia de letras. Los LRC asociados localmente tienen
+prioridad. Hay reintentos acotados y cooldown persistente que respeta Retry-After.
 
-Caché en `config/skylyrics/cache/`, clave SHA-256 de título/artista/álbum/duración.
-Resultados sincronizados duran 30 días; negativos e instrumentales, un día.
-Un fallo de red no se guarda como ausencia definitiva de letras. El guardado usa
-un archivo temporal y reemplazo. Letras locales asociadas en `config/skylyrics/local/`
-tienen prioridad sobre la caché y no se envían a ningún servidor.
-
-La API pública no acredita por sí misma derechos universales sobre cada letra.
-El repositorio solo contiene frases de prueba originales; no se redistribuyen
-letras comerciales. Fuente de contrato y requisitos: https://lrclib.net/docs.md.
+Solo se utilizan endpoints públicos documentados: https://lrclib.net/docs.md.
+El repositorio contiene frases de prueba originales, sin redistribuir letras
+comerciales. El formato Lyricsfile conserva tiempos por palabra cuando existen;
+el renderizado sigue mostrando frases por línea.
 
 ## Sincronización y anclas
 

@@ -10,6 +10,7 @@ import dev.skylyrics.core.LyricsSynchronizer;
 import dev.skylyrics.core.WorldAnchor;
 import dev.skylyrics.core.WorldPhrase;
 import dev.skylyrics.core.PresentationClock;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -41,6 +42,7 @@ public final class SkyLyricsClient {
     private static final LyricsPlacementManager PLACEMENT = new LyricsPlacementManager();
     private static final LyricsWorldRenderer RENDERER = new LyricsWorldRenderer();
     private static final PlaybackCoordinator PLAYBACK = new PlaybackCoordinator();
+    private static final SubtleRhythmEngine RHYTHM = new SubtleRhythmEngine();
     private static final PresentationClock CLOCK = new PresentationClock(System.nanoTime());
     private static final KeyMapping TOGGLE = new KeyMapping("key.skylyrics.toggle",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_L, "key.categories.skylyrics");
@@ -74,6 +76,7 @@ public final class SkyLyricsClient {
         long now = System.nanoTime();
         if (mc.player == null || mc.level == null) return;
         PLAYBACK.sample(now);
+        RHYTHM.update(PLAYBACK.current(), PLAYBACK.spotifyPlaying());
         CLOCK.update(now, !DEMO.running() && PLAYBACK.paused());
         long presentation = CLOCK.at(now);
         DEMO.tick(now, SkyLyricsConfig.ENABLED.get(), cue -> spawn(cue.text(), presentation, cue.endMs() - cue.startMs()));
@@ -88,7 +91,7 @@ public final class SkyLyricsClient {
                 || !SkyLyricsConfig.ENABLED.get() || SCENE.phrases().isEmpty()
                 || Minecraft.getInstance().level == null) return;
         long now = System.nanoTime();
-        RENDERER.render(event, SCENE.phrases(), CLOCK.at(now), now);
+        RENDERER.render(event, SCENE.phrases(), CLOCK.at(now), now, RHYTHM.visual(now));
     }
 
     @SubscribeEvent
@@ -102,6 +105,7 @@ public final class SkyLyricsClient {
         SCENE.clear();
         LyricsTypography.clear();
         PLAYBACK.close();
+        RHYTHM.close();
     }
 
     @SubscribeEvent public static void shutdown(GameShuttingDownEvent event) { reset(); }
@@ -155,6 +159,45 @@ public final class SkyLyricsClient {
                     return 1;
                 }))
                 .then(literal("spotify").executes(ctx -> { reset(); PLAYBACK.spotify(); return 1; }))
+                .then(literal("rhythm").executes(ctx -> rhythmStatus(ctx.getSource()))
+                        .then(literal("on").executes(ctx -> {
+                            RhythmConfig.ENABLED.set(true); SkyLyricsConfig.SPEC.save();
+                            ctx.getSource().sendSuccess(() -> Component.literal("Subtle Rhythm activado: mezcla de salida del SISTEMA; puede incluir juego, Discord y otras apps. No graba ni envía audio."), false);
+                            return rhythmStatus(ctx.getSource());
+                        }))
+                        .then(literal("off").executes(ctx -> {
+                            RhythmConfig.ENABLED.set(false); SkyLyricsConfig.SPEC.save(); RHYTHM.close();
+                            return rhythmStatus(ctx.getSource());
+                        })))
+                .then(literal("retry").executes(ctx -> {
+                    boolean retry = PLAYBACK.retry(CLOCK.at(System.nanoTime()));
+                    ctx.getSource().sendSuccess(() -> Component.literal(retry
+                            ? "Reintentando letras; conserva LRC asociado y respeta Retry-After."
+                            : "No hay una canción actual disponible para reintentar."), false);
+                    return retry ? 1 : 0;
+                }))
+                .then(literal("diagnostics").executes(ctx -> diagnostics(ctx.getSource()))
+                        .then(literal("on").executes(ctx -> {
+                            SkyLyricsConfig.LYRICS_DIAGNOSTICS.set(true); SkyLyricsConfig.SPEC.save();
+                            return diagnostics(ctx.getSource());
+                        }))
+                        .then(literal("off").executes(ctx -> {
+                            SkyLyricsConfig.LYRICS_DIAGNOSTICS.set(false); SkyLyricsConfig.SPEC.save(); return 1;
+                        }))
+                        .then(literal("export").executes(ctx -> {
+                            var result = PLAYBACK.result();
+                            if (result == null) return diagnostics(ctx.getSource());
+                            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                                try {
+                                    var folder = net.minecraftforge.fml.loading.FMLPaths.CONFIGDIR.get().resolve("skylyrics/diagnostics");
+                                    java.nio.file.Files.createDirectories(folder);
+                                    java.nio.file.Files.writeString(folder.resolve("last-lookup.json"), new com.google.gson.GsonBuilder()
+                                            .setPrettyPrinting().create().toJson(result.diagnostics()));
+                                } catch (java.io.IOException e) { com.mojang.logging.LogUtils.getLogger().warn("SkyLyrics: diagnostic export failed", e); }
+                            });
+                            ctx.getSource().sendSuccess(() -> Component.literal("Exportando diagnóstico a config/skylyrics/diagnostics/last-lookup.json"), false);
+                            return 1;
+                        })))
                 .then(literal("config").executes(ctx -> {
                     Minecraft mc = Minecraft.getInstance();
                     mc.tell(() -> mc.setScreen(new SkyLyricsConfigScreen(null)));
@@ -176,6 +219,40 @@ public final class SkyLyricsClient {
                                     "LRC local: reloj manual iniciado; no reproduce audio ni detecta Spotify."), false);
                             return 1;
                         })))));
+    }
+
+    private static int diagnostics(CommandSourceStack source) {
+        var track = PLAYBACK.current();
+        source.sendSuccess(() -> Component.literal("SkyLyrics: " + PLAYBACK.status()), false);
+        if (track != null) source.sendSuccess(() -> Component.literal("Título=" + track.title() + " | artista=" + track.artist()
+                + " | álbum=" + track.album() + " | duración=" + track.durationMs() + "ms | posición=" + track.positionAt(System.nanoTime())
+                + "ms | reproduciendo=" + track.playing()), false);
+        var result = PLAYBACK.result();
+        if (result == null) return 1;
+        var diag = result.diagnostics();
+        source.sendSuccess(() -> Component.literal("Estado=" + result.state() + " | sincronización=" + diag.syncMode()
+                + " | fuente=" + diag.source() + " | caché=" + diag.cached() + " | espera=" + result.retryAfterMs() + "ms"), false);
+        source.sendSuccess(() -> Component.literal(diag.detail()), false);
+        for (var attempt : diag.attempts()) source.sendSuccess(() -> Component.literal(attempt.stage() + " " + attempt.query()
+                + " -> HTTP " + attempt.httpStatus() + " " + attempt.error()), false);
+        int shown = 0;
+        for (var candidate : diag.candidates()) {
+            if (shown++ >= 10) break;
+            source.sendSuccess(() -> Component.literal("#" + candidate.id() + " " + candidate.title() + " / " + candidate.artist()
+                    + " / " + candidate.album() + " / " + candidate.duration() + "s -> " + candidate.reason()), false);
+        }
+        source.sendSuccess(() -> Component.literal("Candidatos evaluados=" + diag.candidates().size() + "; /skylyrics diagnostics export para el informe completo."), false);
+        return 1;
+    }
+
+    public static void stopRhythm() { RHYTHM.close(); }
+    private static int rhythmStatus(CommandSourceStack source) {
+        var state = RHYTHM.state();
+        long age = state.capturedNs() == 0 ? -1 : Math.max(0, (System.nanoTime() - state.capturedNs()) / 1_000_000);
+        source.sendSuccess(() -> Component.literal("Subtle Rhythm: " + RHYTHM.status() + " | fuente=SYSTEM | frecuencia=" + state.sampleRate()
+                + "Hz | RMS=" + String.format(Locale.ROOT, "%.5f", state.rms()) + " | análisis=" + state.analysisNanos() / 1000
+                + "µs | edad estimada de la última ventana=" + age + "ms | captura→último dibujo≈" + RHYTHM.lastRenderAgeMs() + "ms"), false);
+        return 1;
     }
 
     @Mod.EventBusSubscriber(modid = SkyLyrics.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)

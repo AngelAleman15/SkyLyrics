@@ -6,22 +6,21 @@ ni instalación en el servidor.
 
 ![LRC local dentro de Minecraft](docs/evidence/0.3/02-custom-font.png)
 
-**Estado: 0.3.0 experimental.** Fuente Cormorant Garamond, distribución lateral y LRC local comprobados en un cliente
-Minecraft real bajo Linux. LRCLIB comprobado mediante su API real. La integración
-GSMTC está implementada, pero **todavía no se probó con Spotify en Windows**.
+**Estado: 0.4.0 experimental.** Fuente Cormorant Garamond, distribución lateral y LRC local comprobados en un cliente
+Minecraft real bajo Linux. LRCLIB comprobado mediante su API real. GSMTC y el motor Subtle Rhythm están implementados, pero **todavía no se probaron con Spotify/WASAPI en Windows**.
 No se afirma compatibilidad verificada con shaders ni con modpacks concretos.
 
 ## Instalar y usar
 
 1. Crear una instancia Forge 1.20.1 con Java 17. Compilado contra Forge 47.3.0.
-2. Copiar `build/libs/skylyrics-1.20.1-0.3.0.jar` a su carpeta `mods/`.
+2. Copiar `build/libs/skylyrics-1.20.1-0.4.0.jar` a su carpeta `mods/`.
 3. En Windows 10 1809+ / Windows 11, abrir **Spotify de escritorio** y reproducir
    una canción. SkyLyrics consulta su sesión GSMTC al entrar al mundo.
 4. Ejecutar `/skylyrics status` si no aparecen letras. **L** activa/desactiva la
    visualización; el atajo se puede cambiar en Controles.
 5. `/skylyrics config` o el botón Config de la lista de mods abre los ajustes.
 
-No reproduce ni descarga audio, no usa la API privada de Spotify, no solicita
+No reproduce ni descarga audio musical, no usa la API privada de Spotify, no solicita
 contraseñas y no necesita Premium. Para letras online necesita Internet y que
 LRCLIB tenga una versión sincronizada que coincida con los metadatos y duración.
 Anuncios, podcasts y canciones sin duración/letras válidas pueden no mostrar texto.
@@ -71,8 +70,9 @@ Se guarda por título, artista, álbum y duración, y tiene prioridad sobre la c
 online. Los timestamps LRC gobiernan cada intervalo; una línea vacía con timestamp
 marca silencio. Se admiten varios timestamps por línea, fracciones y `[offset:ms]`.
 El fin de la última línea usa la duración conocida. No se inventan tiempos para
-letras sin timestamps. Los tiempos por palabra se descartan para presentación de
-línea: **esta versión no ofrece karaoke por palabra**.
+letras sin timestamps. Los marcadores por palabra de LRC mejorado se presentan por línea; los tiempos
+explícitos de Lyricsfile se conservan como datos. **Esta versión no ofrece karaoke
+visual por palabra**.
 
 ## Comandos cliente
 
@@ -85,16 +85,51 @@ No requieren operador ni mod en el servidor.
 | `/skylyrics lrc <archivo> <segundos>` | Reproducir un timeline LRC local manual |
 | `/skylyrics import <archivo>` | Asociar LRC a la canción actual de Spotify |
 | `/skylyrics config` | Abrir configuración |
+| `/skylyrics retry` | Reintentar letras, respetando Retry-After y LRC locales |
+| `/skylyrics diagnostics [on/off/export]` | Metadatos, búsquedas, candidatos, rechazos y errores |
+| `/skylyrics rhythm [on/off]` | Estado y activación explícita de captura SYSTEM |
 | `/skylyrics demo` | Demo explícita de 36 s con frases originales |
 | `/skylyrics anchor <texto>` | Frase de prueba de 30 s, en un punto fijo |
 | `/skylyrics stop` | Detener y limpiar; Spotify se retoma con su comando |
 
 Estados útiles: `WINDOWS_REQUIRED` (GSMTC no disponible en este sistema),
 `NO_SESSION`, `BRIDGE_UNAVAILABLE`/`BRIDGE_EXITED`, `STALE_MEDIA`, `SYNCED`,
-`INSTRUMENTAL`, `NO_SYNCED_LYRICS`, `NOT_FOUND`, `CONFIGURE_IDENTITY`, `RATE_LIMITED`.
+`INSTRUMENTAL`, `PLAIN_ONLY`, `NO_SYNCED_LYRICS`, `NOT_FOUND`, `NO_SAFE_MATCH`,
+`INVALID_METADATA`, `AMBIGUOUS_MATCH`, `NETWORK_ERROR`, `HTTP_ERROR`,
+`MALFORMED_RESPONSE`, `CONFIGURE_IDENTITY`, `RATE_LIMITED`.
 Las letras locales funcionan también fuera de Windows. En error no aparece una
 simulación automática. Los detalles del mecanismo Windows están en
 [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
+## Recuperación de letras y diagnóstico
+
+Primero se consulta `/api/get` con los metadatos originales. Si hace falta, se
+continúa con `/api/search`, variantes normalizadas y comparación de artista,
+colaboradores, título, edición y duración. Las versiones Live/acústicas/remixes y
+covers se rechazan si no corresponden; ediciones ambiguas requieren selección
+manual mediante LRC. Se priorizan palabras temporizadas de Lyricsfile y luego LRC.
+Las letras planas no reciben timestamps inventados.
+
+La caché conserva líneas, palabras y diagnóstico. Los reintentos tienen límites y
+respetan Retry-After incluso al recrear el servicio. `/skylyrics diagnostics`
+explica la causa concreta; `diagnostics export` guarda el informe completo local.
+Detalles y reglas: [docs/LYRICS_RECOVERY.md](docs/LYRICS_RECOVERY.md).
+
+## Subtle Rhythm: opcional
+
+**Desactivado por defecto.** `/skylyrics rhythm on` habilita análisis WASAPI de
+la **mezcla de salida del sistema** mientras Spotify reproduce. Puede incluir
+el juego y otras aplicaciones; no es captura exclusiva de Spotify. No graba
+archivos ni envía audio. `/skylyrics rhythm off` detiene la captura.
+
+El RMS, los graves de 40–180 Hz y transitorios reales modulan hasta 102% de escala
+y un aclarado de color de hasta 8%, sin tocar anclas, orientación o duración.
+Silencio y señales constantes no producen un metrónomo artificial. La captura
+usa un auxiliar Windows aislado (.NET Framework 4.7.2 y NAudio 2.2.1 incluidos
+según corresponda); el SDK .NET 8 solo hace falta para reconstruir ese auxiliar.
+
+Estado, configuración, dependencias y límites de validación:
+[docs/SUBTLE_RHYTHM.md](docs/SUBTLE_RHYTHM.md). **Captura real pendiente de probar en Windows.**
 
 ## Configuración persistente
 
@@ -142,16 +177,18 @@ Con JDK 17 en `JAVA_HOME`:
 En Windows: `gradlew.bat build`. ForgeGradle **6.0.42**, Forge **47.3.0**,
 Gradle Wrapper **8.8**, mappings oficiales **1.20.1**. La primera ejecución
 necesita red para resolver dependencias. El JAR reobfuscado se genera en
-`build/libs/skylyrics-1.20.1-0.3.0.jar`.
+`build/libs/skylyrics-1.20.1-0.4.0.jar`.
 
 Las pruebas predeterminadas son locales. La prueba adicional contra LRCLIB es
 opt-in: ejecutar `test --rerun` con `SKYLYRICS_LIVE_TESTS=true` en el entorno.
-No ejecutar esa prueba sin red disponible. Ver [validación](docs/VALIDATION.md).
+No ejecutar esa prueba sin red disponible. El artefacto que contiene las
+dependencias es el JAR sin `-slim`; Forge Jar-in-Jar incluye SnakeYAML 2.3.
+Ver [validación](docs/VALIDATION.md).
 
 ## Arquitectura y rendimiento
 
 - `SpotifyMediaService`: un proceso Windows PowerShell y un lector en background.
-- `LyricsProvider` / `LrclibProvider`: consulta exacta y control de 429/Retry-After.
+- `LyricsProvider` / `LrclibProvider`: búsquedas escalonadas, selección conservadora y 429/Retry-After.
 - `LyricsSession` / `LyricsCache`: un worker para HTTP/disco, cancelación y revisión
   por solicitud para que resultados de canciones anteriores no aparezcan.
 - `LrcParser`: líneas con tiempos reales; nunca temporiza texto plano.
@@ -160,6 +197,7 @@ No ejecutar esa prueba sin red disponible. Ver [validación](docs/VALIDATION.md)
 - `LyricsPlacementManager`: consulta inicial de chunks ya cargados y raycast acotado.
 - `LyricsWorldRenderer`: evento `AFTER_PARTICLES`, sistema de fuentes de Minecraft y buffer reutilizado.
 - `LyricsTypography`: fuente seleccionable y layouts acotados en caché.
+- `AudioCaptureService` / `RhythmAnalyzer` / `SubtleRhythmController`: pipe local, DSP en worker y modulación visual acotada.
 - `PlacementDistribution` / `PlacementGeometry`: zonas ponderadas y prevención inicial de superposición.
 - `AnimationController` / `SkyLyricsConfig`: alfa/escala musicales, retiro por reloj real y configuración cliente.
 
@@ -170,4 +208,5 @@ usuario. Investigación previa y fuentes: [docs/RESEARCH.md](docs/RESEARCH.md).
 El código propio conserva todos los derechos reservados. **Cormorant Garamond**
 (Copyright 2015 The Cormorant Project Authors) se distribuye bajo **SIL OFL 1.1**;
 la licencia está en `licenses/` y dentro del JAR. Las licencias del MDK se conservan
-también en `licenses/`.
+también en `licenses/`. NAudio se distribuye bajo MIT y SnakeYAML bajo Apache 2.0;
+sus licencias están en `licenses/` y dentro del JAR.

@@ -2,7 +2,10 @@
 build/
 run/
 run-data/
+run-packaged/
 .idea/
 *.iml
 *.log
 .DS_Store
+native/**/bin/
+native/**/obj/

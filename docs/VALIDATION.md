@@ -6,7 +6,7 @@ JDK Temurin 17.0.21, Gradle Wrapper 8.8, ForgeGradle 6.0.42,
 Minecraft 1.20.1 / Forge 47.3.0, mappings oficiales.
 
 `./gradlew build`: exitoso. Genera un JAR reobfuscado para Java 17.
-21 pruebas locales y una prueba adicional opt-in contra LRCLIB: todas pasaron.
+37 pruebas locales y una prueba adicional opt-in contra LRCLIB: todas pasaron.
 La prueba de red usa los metadatos de ejemplo publicados en la documentación de
 LRCLIB; verifica letras sincronizadas y lectura idéntica desde la caché en disco.
 No guarda esas letras en el repositorio.
@@ -68,8 +68,35 @@ anclaje absoluto. No se agregaron entidades ni red al renderizador.
 Las capturas y el extracto del log de anclaje están en `docs/evidence/`.
 Las primeras capturas corresponden al núcleo de fase 1, antes de integrar Spotify.
 
+## Recuperación y ritmo 0.4
+
+Las pruebas nuevas verifican títulos alternativos, subtítulos significativos,
+colaboraciones, versiones Live/mix incorrectas, tolerancias de duración, álbumes
+ambiguos, texto sin timestamps, prioridad de Lyricsfile por palabra, caché v2,
+reintentos de red y persistencia de Retry-After. Las pruebas DSP cubren RMS,
+filtros, transitorios, silencio, señal constante, adaptación de volumen,
+refractario, suavizado, límites visuales, relojes monotónicos y datos atrasados.
+Comprueban que no se modifican anclas ni plazos y que el servicio sin soporte no
+extrae el ejecutable. Evidencia en `docs/evidence/0.4/`.
+
+El auxiliar NAudio se compiló para net472 y net8.0, sin errores. La autoprueba
+net8 valida decodificación PCM/float en Linux, sin capturar audio. El benchmark
+DSP analiza 213.33 segundos equivalentes de muestras sintéticas en menos de
+0.1 segundos; esto no mide FPS ni el coste de WASAPI o del pipe.
+
+El JAR final incluye SnakeYAML mediante Jar-in-Jar, recursos nativos y licencias.
+Se abrió una copia remapeada por ForgeGradle de ese JAR en el cliente de desarrollo,
+sin registrar el mod desde las fuentes, y se entró al mundo de prueba. Esta prueba
+verifica descubrimiento de dependencias, comandos y renderizado en Forge. Se
+comprobó LRC local con diagnóstico SYNCED/LINE, exportación JSON y ancla #1
+invariable después de caminar. El estado inicial es DISABLED; activar sin sesión
+real devuelve WAITING_FOR_SPOTIFY y no extrae auxiliares. Esta prueba no es
+una instalación Windows de producción.
+
 ## No ejecutado / límites de esta entrega
 
+- **WASAPI en Windows**: falta probar captura física, cambio/desconexión de salida,
+  pausa/cierre y latencia real. La opción permanece desactivada por defecto.
 - **Spotify/GSMTC en Windows**: implementado, sin sistema Windows disponible aquí.
   Falta probar sesiones reales, pausa/reanudación, cierre y cambios rápidos.
 - Servidor multijugador sin el mod; no se ha afirmado una prueba de conexión real.

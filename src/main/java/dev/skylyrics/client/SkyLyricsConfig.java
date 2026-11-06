@@ -9,7 +9,7 @@ public final class SkyLyricsConfig {
     public enum FontStyle { CUSTOM, VANILLA }
 
     public static final ForgeConfigSpec SPEC;
-    public static final ForgeConfigSpec.BooleanValue ENABLED, BILLBOARD, SPOTIFY;
+    public static final ForgeConfigSpec.BooleanValue ENABLED, BILLBOARD, SPOTIFY, LYRICS_DIAGNOSTICS;
     public static final ForgeConfigSpec.ConfigValue<String> LRCLIB_IDENTITY;
     public static final ForgeConfigSpec.IntValue SYNC_OFFSET_MS;
     public static final ForgeConfigSpec.EnumValue<Visibility> VISIBILITY;
@@ -26,6 +26,8 @@ public final class SkyLyricsConfig {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
         ENABLED = b.define("enabled", true);
         SPOTIFY = b.define("spotify", true);
+        LYRICS_DIAGNOSTICS = b.comment("Opt-in metadata/query/rejection diagnostics in the local game log. Never logs lyric text.")
+                .define("lyricsDiagnostics", false);
         LRCLIB_IDENTITY = b.comment("Real public project URL or contact required by LRCLIB; empty disables uncached HTTP lookups.")
                 .define("lrclibIdentity", "https://github.com/AngelAleman15/SkyLyrics");
         SYNC_OFFSET_MS = b.comment("Positive offset displays lyrics earlier. Does not affect existing anchors.")
@@ -60,6 +62,7 @@ public final class SkyLyricsConfig {
         TRACK_CHANGE_FADE_MS = b.comment("Real-time milliseconds; keeps finishing even when the next track is paused.")
                 .defineInRange("trackChangeFadeMs", 350, 0, 2000);
         MAX_PHRASES = b.defineInRange("maxVisibleLyrics", 4, 1, 16);
+        RhythmConfig.define(b);
         SPEC = b.build();
     }
 

@@ -1,0 +1,10 @@
+Java 17 / Forge 1.20.1-47.3.0 / Gradle 8.8
+SKYLYRICS_LIVE_TESTS=true ./gradlew build: SUCCESS
+dev.skylyrics.core.CinematicPresentationTest: tests=6, failures=0, errors=0, skipped=0
+dev.skylyrics.core.MusicPlaybackTest: tests=4, failures=0, errors=0, skipped=0
+dev.skylyrics.core.WorldLyricsTest: tests=6, failures=0, errors=0, skipped=0
+dev.skylyrics.lyrics.LrcParserTest: tests=3, failures=0, errors=0, skipped=0
+dev.skylyrics.lyrics.LrclibLiveTest: tests=1, failures=0, errors=0, skipped=0
+dev.skylyrics.lyrics.LyricsCacheTest: tests=2, failures=0, errors=0, skipped=0
+dev.skylyrics.lyrics.LyricsRecoveryTest: tests=8, failures=0, errors=0, skipped=0
+dev.skylyrics.rhythm.RhythmTest: tests=8, failures=0, errors=0, skipped=0

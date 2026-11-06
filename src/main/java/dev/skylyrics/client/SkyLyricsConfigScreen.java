@@ -44,7 +44,14 @@ public final class SkyLyricsConfigScreen extends Screen {
         addRenderableWidget(Button.builder(label("Billboard", SkyLyricsConfig.BILLBOARD.get()), button -> {
             SkyLyricsConfig.BILLBOARD.set(!SkyLyricsConfig.BILLBOARD.get());
             button.setMessage(label("Billboard", SkyLyricsConfig.BILLBOARD.get())); save();
-        }).bounds(x, y + 78, 300, 20).build());
+        }).bounds(x, y + 78, 145, 20).build());
+        addRenderableWidget(Button.builder(label("Ritmo (sistema)", RhythmConfig.ENABLED.get()), button -> {
+            RhythmConfig.ENABLED.set(!RhythmConfig.ENABLED.get());
+            if (!RhythmConfig.ENABLED.get()) SkyLyricsClient.stopRhythm();
+            button.setMessage(label("Ritmo (sistema)", RhythmConfig.ENABLED.get())); save();
+        }).tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
+                "Captura opcional de la mezcla de salida del sistema: incluye juego y otras apps. Sin archivos ni envío de audio.")))
+                .bounds(x + 155, y + 78, 145, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Desfase −100 ms"), b -> offset(-100))
                 .bounds(x, y + 104, 145, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Desfase +100 ms"), b -> offset(100))
