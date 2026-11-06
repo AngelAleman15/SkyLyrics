@@ -21,6 +21,8 @@ public final class MusicLyricsController {
         current = null;
     }
 
+    public void clear() { cues = List.of(); consumed = -2; current = null; }
+
     public void tick(long positionMs, long nowNs, double rate, boolean enabled,
                      BiFunction<LyricCue, Long, WorldPhrase> spawn) {
         int low = 0, high = cues.size() - 1, index = -1;

@@ -6,7 +6,7 @@ JDK Temurin 17.0.21, Gradle Wrapper 8.8, ForgeGradle 6.0.42,
 Minecraft 1.20.1 / Forge 47.3.0, mappings oficiales.
 
 `./gradlew build`: exitoso. Genera un JAR reobfuscado para Java 17.
-15 pruebas locales y una prueba adicional opt-in contra LRCLIB: todas pasaron.
+21 pruebas locales y una prueba adicional opt-in contra LRCLIB: todas pasaron.
 La prueba de red usa los metadatos de ejemplo publicados en la documentación de
 LRCLIB; verifica letras sincronizadas y lectura idéntica desde la caché en disco.
 No guarda esas letras en el repositorio.
@@ -37,6 +37,33 @@ Mundo individual creativo plano, fuente vanilla, sin shaders ni mods adicionales
 | LRC local → parser → reloj → render | Frases sucesivas con IDs/anclas diferentes, estado `SYNCED` (`07`, `08`) |
 | Pantalla de configuración | Abre dentro del juego, guarda opciones (`09-config-screen`) |
 | Natural y Etéreo frente a una pared | Natural oculta la frase, Etéreo la muestra completa; mismo ID/coordenadas (`10-natural-wall`, `11-ethereal-wall`) |
+
+### Presentación 0.3
+
+Las capturas nuevas están en `docs/evidence/0.3/`, con el mismo cliente y mundo.
+Se pasó a pantalla completa 1280×720 para comparar tipografía:
+
+- Cormorant Garamond Regular TTF cargada desde los recursos del mod, sin errores
+  del proveedor. Se recargaron recursos con F3+T después de elegir la variante.
+- Aparición lateral con orientación del jugador 0°; texto en un lado del campo
+  visual (`01-lateral-birth`). Luego se giró la vista para inspeccionar la fuente,
+  sin mover su ancla (`02-custom-font`).
+- Selección CUSTOM/VANILLA mediante la pantalla interna (`05-vanilla-font`).
+- Billboard desactivado, verificado en la configuración persistida, y caminata
+  lateral: #7 conserva `(4.596, -36.461, 5.075)`, yaw=-47.4°, pitch=-42.0°, roll=2.6°
+  (`06-fixed-orientation`, `03-walked-fixed-anchor`).
+- LRC local con CUSTOM: estado SYNCED y avance de #8 a #9 (`07`–`09`).
+- La migración real conservó `textScale=0.14`, fade-in 550 ms y fade-out 900 ms
+  de la instalación de prueba 0.2, bajo los nombres nuevos.
+
+Las seis pruebas nuevas verifican distribución estadística con semilla fija
+(100.000 selecciones), modos SIDES/RANDOM, solapamiento espacial y angular,
+pausa de alfa/escala, retiro de la canción anterior con reloj musical congelado
+y migración idempotente. La prueba de retiro no llama al renderizador y comprueba
+que ni correcciones tardías ni notificaciones repetidas alarguen la desaparición.
+
+No se introdujo traslación vertical, para conservar el requisito fundamental de
+anclaje absoluto. No se agregaron entidades ni red al renderizador.
 
 Las capturas y el extracto del log de anclaje están en `docs/evidence/`.
 Las primeras capturas corresponden al núcleo de fase 1, antes de integrar Spotify.

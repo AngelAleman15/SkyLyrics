@@ -1,0 +1,10 @@
+SkyLyrics 0.3.0 / Java 17 / Minecraft 1.20.1 / Forge 47.3.0
+Command: SKYLYRICS_LIVE_TESTS=true ./gradlew build
+Result: BUILD SUCCESSFUL
+
+dev.skylyrics.core.CinematicPresentationTest: tests=6 failures=0 errors=0 skipped=0
+dev.skylyrics.core.MusicPlaybackTest: tests=4 failures=0 errors=0 skipped=0
+dev.skylyrics.core.WorldLyricsTest: tests=6 failures=0 errors=0 skipped=0
+dev.skylyrics.lyrics.LrcParserTest: tests=3 failures=0 errors=0 skipped=0
+dev.skylyrics.lyrics.LrclibLiveTest: tests=1 failures=0 errors=0 skipped=0
+dev.skylyrics.lyrics.LyricsCacheTest: tests=2 failures=0 errors=0 skipped=0

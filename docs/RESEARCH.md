@@ -1,5 +1,8 @@
 # Investigación técnica — 6 de noviembre de 2026
 
+Esta es la investigación inicial del proyecto. La fuente, distribución y
+animaciones añadidas en 0.3 están documentadas en [CINEMATIC.md](CINEMATIC.md).
+
 Documento escrito antes de implementar. Objetivo: Forge 1.20.1, Java 17,
 solo cliente. El requisito posterior del usuario impone anclas absolutas e
 inmutables; reemplaza el movimiento vertical sugerido en la especificación.

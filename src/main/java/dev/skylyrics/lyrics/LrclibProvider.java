@@ -38,7 +38,7 @@ public final class LrclibProvider implements LyricsProvider {
                 + "&album_name=" + encode(track.album()) + "&duration="
                 + String.format(Locale.ROOT, "%.3f", track.durationMs() / 1000.0);
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://lrclib.net/api/get?" + query))
-                .header("User-Agent", "SkyLyrics/0.2.0 (" + contact + ")")
+                .header("User-Agent", "SkyLyrics/0.3.0 (" + contact + ")")
                 .header("Accept", "application/json").timeout(Duration.ofSeconds(10)).GET().build();
         // ofString keeps the request deadline active through the entire body transfer.
         HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));

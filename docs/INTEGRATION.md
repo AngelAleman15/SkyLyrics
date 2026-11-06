@@ -41,7 +41,7 @@ metadatos de la respuesta y una tolerancia de duración de ±2 s; un resultado d
 se rechaza. Esto puede omitir versiones válidas si sus metadatos difieren, pero
 reduce el riesgo de mostrar letras de otra edición.
 
-`User-Agent`: `SkyLyrics/0.2.0 (https://github.com/AngelAleman15/SkyLyrics)`.
+`User-Agent`: `SkyLyrics/0.3.0 (https://github.com/AngelAleman15/SkyLyrics)`.
 El repositorio fue verificado como existente y público antes de configurar esta
 URL. `lrclibIdentity` permite modificarla; vacío impide consultas online nuevas,
 aunque conserva el acceso a archivos locales y caché. No hay una URL ficticia ni

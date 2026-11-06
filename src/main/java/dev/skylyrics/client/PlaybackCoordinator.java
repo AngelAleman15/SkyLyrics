@@ -41,10 +41,12 @@ public final class PlaybackCoordinator implements AutoCloseable {
     public PlaybackSnapshot current() { return current; }
     public String status() { return status; }
 
-    public void tick(long nowNs, long presentationNs, BiFunction<LyricCue, Long, WorldPhrase> spawn) {
+    public void tick(long nowNs, long presentationNs, BiFunction<LyricCue, Long, WorldPhrase> spawn,
+                     Runnable onTrackChanged) {
         if (current == null) { controller.suspend(presentationNs); return; }
         String key = current.trackKey();
         if (!key.equals(requestedKey)) {
+            onTrackChanged.run();
             requestedKey = key;
             controller.replace(List.of(), presentationNs);
             acceptedRevision = -1;
@@ -82,7 +84,7 @@ public final class PlaybackCoordinator implements AutoCloseable {
     @Override public void close() {
         if (media != null) { media.close(); media = null; }
         if (lyrics != null) { lyrics.close(); lyrics = null; }
-        controller.replace(List.of(), 0);
+        controller.clear();
         current = null; requestedKey = ""; localName = null;
         automatic = false; acceptedRevision = -1;
         status = "STOPPED";

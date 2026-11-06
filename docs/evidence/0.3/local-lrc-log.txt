@@ -1,0 +1,6 @@
+[06Nov2026 04:49:17.012] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | SYNCED | demo=false | frases=1
+[06Nov2026 04:49:24.796] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | SYNCED | demo=false | frases=1
+[06Nov2026 04:55:53.419] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | SYNCED | demo=false | frases=1
+[06Nov2026 04:55:53.420] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #8 (0.398, -41.002, 10.476) yaw=-51.9 pitch=-34.8 roll=0.5
+[06Nov2026 04:56:00.987] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] SkyLyrics | SYNCED | demo=false | frases=1
+[06Nov2026 04:56:00.988] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] #9 (-17.812, -47.423, 11.109) yaw=-5.7 pitch=-32.8 roll=-0.2

@@ -17,6 +17,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.GameShuttingDownEvent;
@@ -75,8 +77,9 @@ public final class SkyLyricsClient {
         CLOCK.update(now, !DEMO.running() && PLAYBACK.paused());
         long presentation = CLOCK.at(now);
         DEMO.tick(now, SkyLyricsConfig.ENABLED.get(), cue -> spawn(cue.text(), presentation, cue.endMs() - cue.startMs()));
-        PLAYBACK.tick(now, presentation, (cue, duration) -> spawn(cue.text(), presentation, duration));
-        SCENE.expire(presentation);
+        PLAYBACK.tick(now, presentation, (cue, duration) -> spawn(cue.text(), presentation, duration),
+                () -> SCENE.retireAll(presentation, now, SkyLyricsConfig.TRACK_CHANGE_FADE_MS.get()));
+        SCENE.expire(presentation, now);
     }
 
     @SubscribeEvent
@@ -84,7 +87,8 @@ public final class SkyLyricsClient {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES
                 || !SkyLyricsConfig.ENABLED.get() || SCENE.phrases().isEmpty()
                 || Minecraft.getInstance().level == null) return;
-        RENDERER.render(event, SCENE.phrases(), CLOCK.at(System.nanoTime()));
+        long now = System.nanoTime();
+        RENDERER.render(event, SCENE.phrases(), CLOCK.at(now), now);
     }
 
     @SubscribeEvent
@@ -96,6 +100,7 @@ public final class SkyLyricsClient {
     private static void reset() {
         DEMO.stop();
         SCENE.clear();
+        LyricsTypography.clear();
         PLAYBACK.close();
     }
 
@@ -103,10 +108,10 @@ public final class SkyLyricsClient {
 
     private static WorldPhrase spawn(String text, long nowNs, long durationMs) {
         Minecraft mc = Minecraft.getInstance();
-        WorldAnchor anchor = PLACEMENT.create(mc);
+        WorldAnchor anchor = PLACEMENT.create(mc, text, SCENE.phrases());
         if (anchor == null || !SCENE.add(text, anchor, nowNs, durationMs,
                 SkyLyricsConfig.FADE_IN_MS.get(), SkyLyricsConfig.FADE_OUT_MS.get(),
-                SkyLyricsConfig.MAX_PHRASES.get())) return null;
+                SkyLyricsConfig.MAX_PHRASES.get(), System.nanoTime())) return null;
         return SCENE.phrases().get(SCENE.phrases().size() - 1);
     }
 
@@ -130,20 +135,21 @@ public final class SkyLyricsClient {
                     DEMO.stop();
                     PLAYBACK.close();
                     CLOCK.update(System.nanoTime(), false);
-                    WorldAnchor anchor = PLACEMENT.create(mc);
+                    String text = StringArgumentType.getString(ctx, "text");
+                    WorldAnchor anchor = PLACEMENT.create(mc, text, SCENE.phrases());
                     if (anchor == null) return 0;
                     // Manual 30-second test phrase. Explicit creation, never a visibility repair.
-                    return SCENE.add(StringArgumentType.getString(ctx, "text"), anchor,
+                    return SCENE.add(text, anchor,
                             CLOCK.at(System.nanoTime()), 30_000, SkyLyricsConfig.FADE_IN_MS.get(),
-                            SkyLyricsConfig.FADE_OUT_MS.get(), SkyLyricsConfig.MAX_PHRASES.get()) ? 1 : 0;
+                            SkyLyricsConfig.FADE_OUT_MS.get(), SkyLyricsConfig.MAX_PHRASES.get(), System.nanoTime()) ? 1 : 0;
                 })))
                 .then(literal("status").executes(ctx -> {
                     ctx.getSource().sendSuccess(() -> Component.literal("SkyLyrics | " + PLAYBACK.status() + " | demo="
                             + DEMO.running() + " | frases=" + SCENE.phrases().size()), false);
                     for (var phrase : SCENE.phrases()) {
                         var a = phrase.anchor();
-                        String report = String.format(Locale.ROOT, "#%d (%.3f, %.3f, %.3f)",
-                                phrase.id(), a.x(), a.y(), a.z());
+                        String report = String.format(Locale.ROOT, "#%d (%.3f, %.3f, %.3f) yaw=%.1f pitch=%.1f roll=%.1f",
+                                phrase.id(), a.x(), a.y(), a.z(), a.yawDegrees(), a.pitchDegrees(), a.rollDegrees());
                         ctx.getSource().sendSuccess(() -> Component.literal(report), false);
                     }
                     return 1;
@@ -176,6 +182,10 @@ public final class SkyLyricsClient {
     public static final class ModEvents {
         @SubscribeEvent
         public static void keys(RegisterKeyMappingsEvent event) { event.register(TOGGLE); }
+        @SubscribeEvent
+        public static void reload(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener((ResourceManagerReloadListener) manager -> LyricsTypography.clear());
+        }
         @SubscribeEvent
         public static void setup(FMLClientSetupEvent event) {
             ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
