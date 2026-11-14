@@ -1,6 +1,6 @@
 package dev.skylyrics.client;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import dev.skylyrics.core.PlacementDistribution;
 
 public final class SkyLyricsConfig {
@@ -8,31 +8,31 @@ public final class SkyLyricsConfig {
     public enum Style { CINEMATIC, AMBIENT }
     public enum FontStyle { CUSTOM, VANILLA }
 
-    public static final ForgeConfigSpec SPEC;
-    public static final ForgeConfigSpec.BooleanValue ENABLED, BILLBOARD, SPOTIFY;
-    public static final ForgeConfigSpec.ConfigValue<String> LRCLIB_IDENTITY;
-    public static final ForgeConfigSpec.IntValue SYNC_OFFSET_MS;
-    public static final ForgeConfigSpec.EnumValue<Visibility> VISIBILITY;
-    public static final ForgeConfigSpec.EnumValue<Style> STYLE;
-    public static final ForgeConfigSpec.EnumValue<FontStyle> FONT_STYLE;
-    public static final ForgeConfigSpec.EnumValue<PlacementDistribution.Mode> PLACEMENT_MODE;
-    public static final ForgeConfigSpec.DoubleValue SIDE_BIAS, HEIGHT_VARIATION, ROTATION_VARIATION;
-    public static final ForgeConfigSpec.IntValue LEFT_WEIGHT, RIGHT_WEIGHT, ELEVATED_WEIGHT, FRONT_WEIGHT, TRACK_CHANGE_FADE_MS;
-    public static final ForgeConfigSpec.DoubleValue MIN_DISTANCE, MAX_DISTANCE,
+    public static final ModConfigSpec SPEC;
+    public static final ModConfigSpec.BooleanValue ENABLED, BILLBOARD, SPOTIFY;
+    public static final ModConfigSpec.ConfigValue<String> LRCLIB_IDENTITY;
+    public static final ModConfigSpec.IntValue SYNC_OFFSET_MS;
+    public static final ModConfigSpec.EnumValue<Visibility> VISIBILITY;
+    public static final ModConfigSpec.EnumValue<Style> STYLE;
+    public static final ModConfigSpec.EnumValue<FontStyle> FONT_STYLE;
+    public static final ModConfigSpec.EnumValue<PlacementDistribution.Mode> PLACEMENT_MODE;
+    public static final ModConfigSpec.DoubleValue SIDE_BIAS, HEIGHT_VARIATION, ROTATION_VARIATION;
+    public static final ModConfigSpec.IntValue LEFT_WEIGHT, RIGHT_WEIGHT, ELEVATED_WEIGHT, FRONT_WEIGHT, TRACK_CHANGE_FADE_MS;
+    public static final ModConfigSpec.DoubleValue MIN_DISTANCE, MAX_DISTANCE,
             MIN_HEIGHT, MAX_HEIGHT, TEXT_SCALE, OPACITY;
-    public static final ForgeConfigSpec.IntValue FADE_IN_MS, FADE_OUT_MS, MAX_PHRASES, COLOR;
+    public static final ModConfigSpec.IntValue FADE_IN_MS, FADE_OUT_MS, MAX_PHRASES, COLOR;
 
     static {
-        ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder b = new ModConfigSpec.Builder();
         ENABLED = b.define("enabled", true);
         SPOTIFY = b.define("spotify", true);
         LRCLIB_IDENTITY = b.comment("Real public project URL or contact required by LRCLIB; empty disables uncached HTTP lookups.")
                 .define("lrclibIdentity", "https://github.com/AngelAleman15/SkyLyrics");
         SYNC_OFFSET_MS = b.comment("Positive offset displays lyrics earlier. Does not affect existing anchors.")
                 .defineInRange("syncOffsetMs", 0, -10000, 10000);
-        BILLBOARD = b.comment("Rotation only. Anchors never move.").define("enableBillboarding", true);
+        BILLBOARD = b.comment("Rotation only. Anchors never move.").define("enableBillboarding", false);
         FONT_STYLE = b.defineEnum("fontStyle", FontStyle.CUSTOM);
-        PLACEMENT_MODE = b.defineEnum("placementMode", PlacementDistribution.Mode.CINEMATIC);
+        PLACEMENT_MODE = b.defineEnum("placementMode", PlacementDistribution.Mode.SIDES);
         SIDE_BIAS = b.comment("Multiplier for left/right weights; 1 preserves the configured 40/40/10/10 distribution.")
                 .defineInRange("sideBias", 1.0, 0.0, 4.0);
         LEFT_WEIGHT = b.defineInRange("leftWeight", 40, 0, 100);

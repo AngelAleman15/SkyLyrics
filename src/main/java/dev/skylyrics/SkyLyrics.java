@@ -1,24 +1,24 @@
 package dev.skylyrics;
 
 import dev.skylyrics.client.SkyLyricsConfig;
+import dev.skylyrics.client.SkyLyricsConfigScreen;
 import dev.skylyrics.core.ConfigMigration;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.api.distmarker.Dist;
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
-@Mod(SkyLyrics.MOD_ID)
+@Mod(value = SkyLyrics.MOD_ID, dist = Dist.CLIENT)
 public final class SkyLyrics {
     public static final String MOD_ID = "skylyrics";
-
-    public SkyLyrics() {
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            try { ConfigMigration.migrate(FMLPaths.CONFIGDIR.get().resolve("skylyrics-client.toml")); }
-            catch (java.io.IOException e) { LogUtils.getLogger().warn("SkyLyrics: could not migrate legacy configuration", e); }
-        }
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, SkyLyricsConfig.SPEC);
+    public SkyLyrics(ModContainer container) {
+        try { ConfigMigration.migrate(FMLPaths.CONFIGDIR.get().resolve("skylyrics-client.toml")); }
+        catch (java.io.IOException e) { LogUtils.getLogger().warn("SkyLyrics: could not migrate legacy configuration", e); }
+        container.registerConfig(ModConfig.Type.CLIENT, SkyLyricsConfig.SPEC);
+        container.registerExtensionPoint(IConfigScreenFactory.class,
+                (mod, parent) -> new SkyLyricsConfigScreen(parent));
     }
 }

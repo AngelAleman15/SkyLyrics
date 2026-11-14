@@ -1,32 +1,24 @@
 plugins {
     id 'java'
-    id 'net.minecraftforge.gradle' version '6.0.42'
+    id 'net.neoforged.moddev' version '2.0.107'
 }
-version = '0.3.0'
+version = '0.4.0-neoforge'
 group = 'dev.skylyrics'
-base { archivesName = 'skylyrics-1.20.1' }
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-minecraft {
-    mappings channel: 'official', version: '1.20.1'
-    copyIdeResources = true
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'info'
-            mods { skylyrics { source sourceSets.main } }
-        }
-    }
+base { archivesName = 'skylyrics-1.21.1' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+neoForge {
+    version = '21.1.266'
+    runs { client { client() } }
+    mods { skylyrics { sourceSet sourceSets.main } }
 }
 repositories { mavenCentral() }
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.3.0'
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
-tasks.named('test') { useJUnitPlatform() }
+tasks.named('test') { useJUnitPlatform(); exclude '**/LrclibLiveTest*' }
 tasks.named('jar', Jar) {
     manifest { attributes 'Implementation-Version': project.version }
-    finalizedBy 'reobfJar'
 }

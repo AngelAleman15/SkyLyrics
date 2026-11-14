@@ -1,7 +1,7 @@
 package dev.skylyrics.client;
 
 import dev.skylyrics.core.*;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 import java.util.List;
 import java.util.function.BiFunction;
 

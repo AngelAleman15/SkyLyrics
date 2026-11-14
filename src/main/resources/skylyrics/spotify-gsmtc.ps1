@@ -23,7 +23,9 @@ try {
     $manager = Await ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager]::RequestAsync()) ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager])
     while ($true) {
         try {
-            $sessions = @($manager.GetSessions() | Where-Object { $_.SourceAppUserModelId -match '(?i)spotify' })
+            $allSessions = @($manager.GetSessions())
+            $sessions = @($allSessions | Where-Object { $_.SourceAppUserModelId -match '(?i)spotify' })
+            if ($sessions.Count -eq 0) { $sessions = $allSessions }
             $session = $sessions | Where-Object { $_.GetPlaybackInfo().PlaybackStatus.ToString() -eq 'Playing' } | Select-Object -First 1
             if ($null -eq $session) { $session = $sessions | Select-Object -First 1 }
             if ($null -eq $session) {

@@ -15,12 +15,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /** Bounded candidate search at birth only. Existing appearances are read-only obstacles. */
 public final class LyricsPlacementManager {
+    private final dev.skylyrics.core.LateralAlternator sides = new dev.skylyrics.core.LateralAlternator();
     public WorldAnchor create(Minecraft mc, String text, List<WorldPhrase> existing) {
         if (mc.player == null || mc.level == null) throw new IllegalStateException("No world");
         Vec3 eye = mc.player.getEyePosition();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         var mode = SkyLyricsConfig.PLACEMENT_MODE.get();
-        var zone = PlacementDistribution.choose(mode, SkyLyricsConfig.SIDE_BIAS.get(),
+        var zone = mode == PlacementDistribution.Mode.SIDES ? sides.next() : PlacementDistribution.choose(mode, SkyLyricsConfig.SIDE_BIAS.get(),
                 SkyLyricsConfig.LEFT_WEIGHT.get(), SkyLyricsConfig.RIGHT_WEIGHT.get(),
                 SkyLyricsConfig.ELEVATED_WEIGHT.get(), SkyLyricsConfig.FRONT_WEIGHT.get(), random);
         var layout = LyricsTypography.layout(mc, text);
@@ -87,6 +88,7 @@ public final class LyricsPlacementManager {
                     - Math.max(0, pitchDifference - 35) / 90 * .2 + random.nextDouble() * .15;
             if (score > bestScore) { selected = anchor; bestScore = score; }
         }
+        if (selected != null && mode == PlacementDistribution.Mode.SIDES) sides.accept();
         return selected; // Null means skip this cue, never retry it to keep it visible.
     }
 

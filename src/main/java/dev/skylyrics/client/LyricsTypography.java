@@ -11,8 +11,8 @@ import java.util.Map;
 
 /** Bounded layout cache, shared by birth-time bounds and drawing; no font/network I/O here. */
 public final class LyricsTypography {
-    private static final ResourceLocation EDITORIAL = new ResourceLocation("skylyrics", "editorial");
-    private static final ResourceLocation VANILLA = new ResourceLocation("minecraft", "default");
+    private static final ResourceLocation EDITORIAL = ResourceLocation.fromNamespaceAndPath("skylyrics", "editorial");
+    private static final ResourceLocation VANILLA = ResourceLocation.fromNamespaceAndPath("minecraft", "default");
     public record Line(FormattedCharSequence text, int width) { }
     public record Layout(List<Line> lines, int width, int height, int lineSpacing) { }
     private static final Map<String, Layout> CACHE = new LinkedHashMap<>() {

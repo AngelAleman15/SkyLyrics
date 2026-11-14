@@ -13,20 +13,20 @@ import dev.skylyrics.core.PresentationClock;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.GameShuttingDownEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.client.ConfigScreenHandler;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Locale;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-@Mod.EventBusSubscriber(modid = SkyLyrics.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = SkyLyrics.MOD_ID, value = Dist.CLIENT)
 public final class SkyLyricsClient {
     private static final LyricsScene SCENE = new LyricsScene();
     private static final LyricsPlacementManager PLACEMENT = new LyricsPlacementManager();
@@ -43,7 +43,7 @@ public final class SkyLyricsClient {
     private static final PlaybackCoordinator PLAYBACK = new PlaybackCoordinator();
     private static final PresentationClock CLOCK = new PresentationClock(System.nanoTime());
     private static final KeyMapping TOGGLE = new KeyMapping("key.skylyrics.toggle",
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_L, "key.categories.skylyrics");
+            InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), "key.categories.skylyrics");
     private static final LyricsSynchronizer DEMO = new LyricsSynchronizer(List.of(
             new LyricCue(0, 6000, "SkyLyrics · DEMO"),
             new LyricCue(6000, 12000, "Estas palabras se quedan aquí"),
@@ -56,8 +56,7 @@ public final class SkyLyricsClient {
     private SkyLyricsClient() { }
 
     @SubscribeEvent
-    public static void tick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
+    public static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         // Clear only when the world is actually replaced, never when the player moves.
         if (level != mc.level) {
@@ -178,18 +177,13 @@ public final class SkyLyricsClient {
                         })))));
     }
 
-    @Mod.EventBusSubscriber(modid = SkyLyrics.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = SkyLyrics.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     public static final class ModEvents {
         @SubscribeEvent
         public static void keys(RegisterKeyMappingsEvent event) { event.register(TOGGLE); }
         @SubscribeEvent
         public static void reload(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener((ResourceManagerReloadListener) manager -> LyricsTypography.clear());
-        }
-        @SubscribeEvent
-        public static void setup(FMLClientSetupEvent event) {
-            ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
-                    () -> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new SkyLyricsConfigScreen(parent)));
         }
     }
 }

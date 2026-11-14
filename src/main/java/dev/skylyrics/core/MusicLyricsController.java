@@ -19,6 +19,7 @@ public final class MusicLyricsController {
     public void suspend(long nowNs) {
         if (current != null) current.finish(nowNs);
         current = null;
+        consumed = -2;
     }
 
     public void clear() { cues = List.of(); consumed = -2; current = null; }

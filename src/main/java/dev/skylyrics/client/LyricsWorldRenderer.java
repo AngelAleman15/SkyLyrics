@@ -1,7 +1,7 @@
 package dev.skylyrics.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import dev.skylyrics.core.AnimationController;
@@ -12,14 +12,14 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL11;
 
 /** Draw-only consumer: cannot modify, replace or relocate a phrase. */
 public final class LyricsWorldRenderer {
     // Dedicated reusable buffer so flushing lyrics does not flush other mods' buffers.
     private final MultiBufferSource.BufferSource buffers =
-            MultiBufferSource.immediate(new BufferBuilder(8192));
+            MultiBufferSource.immediate(new ByteBufferBuilder(8192));
 
     public void render(RenderLevelStageEvent event, Iterable<WorldPhrase> phrases, long musicalNs, long realNs) {
         Minecraft mc = Minecraft.getInstance();

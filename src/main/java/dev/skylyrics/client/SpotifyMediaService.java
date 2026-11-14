@@ -52,18 +52,8 @@ public final class SpotifyMediaService implements AutoCloseable {
                     try {
                         JsonObject json = JsonParser.parseString(line).getAsJsonObject();
                         status = json.get("state").getAsString();
-                        if (!"SESSION".equals(status)) { snapshot = null; continue; }
-                        long duration = json.get("durationMs").getAsLong();
-                        double rate = json.get("rate").getAsDouble();
-                        if (!Double.isFinite(rate) || rate < 0 || rate > 4) rate = 1;
-                        long position = Math.max(0, json.get("positionMs").getAsLong());
-                        boolean playing = json.get("playing").getAsBoolean();
-                        long transportMs = Math.max(0, Math.min(2000,
-                                System.currentTimeMillis() - json.get("capturedAtMs").getAsLong()));
-                        if (playing) position += (long) (transportMs * rate);
-                        snapshot = new PlaybackSnapshot(json.get("title").getAsString(),
-                                json.get("artist").getAsString(), json.get("album").getAsString(),
-                                Math.max(0, duration), position, playing, rate, System.nanoTime());
+                        snapshot = dev.skylyrics.core.MediaSnapshotCodec.decode(json,
+                                System.currentTimeMillis(), System.nanoTime());
                     } catch (RuntimeException ignored) { status = "INVALID_SNAPSHOT"; snapshot = null; }
                 }
             } finally { child.destroyForcibly(); }

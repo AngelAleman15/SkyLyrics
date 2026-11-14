@@ -60,7 +60,7 @@ public final class SkyLyricsConfigScreen extends Screen {
         save();
     }
     @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(font, title, width / 2, 20, 0xFFF1DC);
         graphics.drawCenteredString(font, "Desfase: " + SkyLyricsConfig.SYNC_OFFSET_MS.get() + " ms", width / 2,
                 Math.max(32, height / 2 - 108) + 131, 0xFFFFFF);

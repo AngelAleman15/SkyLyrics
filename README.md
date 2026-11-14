@@ -1,3 +1,13 @@
+# SkyLyrics — NeoForge 1.21.1
+
+Port of the original Forge 1.20.1 mod, on branch `neoforge-1.21.1`.
+Targets Java 21 and NeoForge 21.1.266. Client only; install no JAR on the server.
+See [the port notes](docs/NEOFORGE-1.21.1.md) for build instructions, playback decisions, new controls and validation limits.
+
+The previous README is preserved below as historical Forge documentation. Its game screenshots and validation results do not validate this NeoForge port.
+
+---
+
 # SkyLyrics
 
 Mod **solo cliente** para Minecraft **1.20.1**, Forge **47.x** y **Java 17**.
